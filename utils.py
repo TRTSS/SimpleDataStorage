@@ -23,6 +23,7 @@ class Document:
     def save_changes(self):
         f = open(self.abs_path, "w")
         f.write(str(dict(self.data)).replace("'", "\""))
+        f.close()
 
 
 def get_path_to_collection(collectionKey):
