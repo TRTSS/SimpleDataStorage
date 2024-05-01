@@ -14,7 +14,7 @@ class Document:
     def get_data(self):
         return self.data
 
-    def update(self, data: dict, autoSave:bool = False):
+    def update(self, data: dict, autoSave: bool = False):
         for key in data.keys():
             self.data[key] = data[key]
         if autoSave:
@@ -27,16 +27,15 @@ class Document:
 
 
 def get_path_to_collection(collectionKey):
-    for d in list(os.walk(main.BASE_STORAGE_DIR))[1:]:
-        abs_path = os.path.abspath(os.path.join(d[0], 'structure.sds'))
-        s = json.loads(open(abs_path).read())
-        if s['key'] == collectionKey:
-            return d[0]
-    raise Exception('There is no collection key {}'.format(collectionKey))
+    cpath = os.path.join(main.BASE_STORAGE_DIR, collectionKey)
+    if os.path.exists(cpath):
+        return cpath
+    else:
+        raise Exception('There is no collection key {}'.format(collectionKey))
 
 
 def generate_collection_basis(collectionPath):
-    d = json.loads((open(os.path.join(collectionPath, 'structure.sds')).read()))
+    d = json.loads((open(os.path.join(collectionPath, 'structure.json')).read()))
     fields = d['fields']
     basis = {}
     for field in fields:
@@ -46,8 +45,8 @@ def generate_collection_basis(collectionPath):
 
 def get_document(collectionKey, documentKey):
     cpath = get_path_to_collection(collectionKey)
-    if os.path.exists(os.path.join(cpath, documentKey)):
-        return Document(os.path.join(cpath, documentKey))
+    if os.path.exists(os.path.join(cpath, documentKey + ".json")):
+        return Document(os.path.join(cpath, documentKey + ".json"))
     else:
         raise Exception('There is no document key {} in collection with key {}'.format(documentKey, collectionKey))
 
@@ -61,3 +60,25 @@ def validate_by_basis(collectionKey: str, dataset: dict):
         if type(dataset[key]) is not locate(basis[key]):
             raise Exception('Field {} must be {} instead of {}'.format(key, basis[key], type(dataset[key])))
     return True
+
+
+def get_all_documents(collectionKey):
+    cpath = get_path_to_collection(collectionKey)
+    keys = []
+    if os.path.exists(cpath):
+        for file in os.listdir(cpath):
+            if 'structure' not in file:
+                keys.append(file.split('.')[0])
+        return keys
+    else:
+        return Exception('There is no collection key {}'.format(collectionKey))
+
+
+# def get_data_by_query(collectionKey: str, query: dict):
+#     cpath = get_path_to_collection(collectionKey)
+#     if validate_by_basis(collectionKey, query):
+#         for doc in os.listdir(cpath):
+#             if '.' not in doc:
+#                 print(doc)
+#     else:
+#         raise

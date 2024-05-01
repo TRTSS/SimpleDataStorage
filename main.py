@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+
+import utils
 from logs.logger import Logger
 import storage
 import os
@@ -52,3 +54,13 @@ def get_data_by_key(collectionKey: str, documentKey: str):
         return storage.get_data(collectionKey, documentKey)
     except Exception as err:
         return {"error": err.__str__()}
+
+
+@app.get('/storage/{collectionKey}/query/make')
+def get_data_by_query(collectionKey: str, body: BaseBody):
+    data = body.payload
+    docs = storage.get_documents_list_by_query(collectionKey, data['query'])
+    res = []
+    for doc in docs:
+        res.append(doc.get_data())
+    return res
