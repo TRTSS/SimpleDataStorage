@@ -1,3 +1,4 @@
-echo "Remote script is running!"
-sleep 5
-echo "Ok, done!"
+echo "STARTING DEPLOY SDS"
+cd ~
+git clone git@github.com:TRTSS/SimpleDataStorage.git
+echo "DONE"
