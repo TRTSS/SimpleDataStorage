@@ -5,6 +5,7 @@ from logs.logger import Logger
 import storage
 import os
 from APIBody import *
+from security import secure_run
 
 app = FastAPI()
 
@@ -18,7 +19,8 @@ LOGGER = Logger(baseDir=BASE_LOG_DIR)
 
 
 @app.post("/test")
-def test_endpoint(body: TestBody):
+@secure_run
+def test_endpoint(body: BaseBody):
     LOGGER.debug('test_endpoint')
     return body.dict()
 
